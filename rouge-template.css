@@ -1,0 +1,47 @@
+body {
+	background-color: #000000;
+	color: #ffffff;
+	font-family: Consolas;
+	font-size: 11px;
+}
+
+.world {
+	margin: 0px;
+	padding: 0px;
+	background-color: rgb(0,0,0,0);
+	background-image:url("WRLD_Grass.png");
+	width: 512px;
+	height: 512px;
+}
+
+.world:focus-visible {
+	outline: 5px solid dodgerblue;
+}
+
+.world-collision {
+	/*position: absolute;*/
+	
+}
+
+#mesh {
+	/*z-index: -1;*/
+}
+
+.user-sprite {
+	position: absolute;
+	width: 64px;
+	height: 64px;
+}
+
+.cmnd-sprite {
+	position: absolute;
+	width: 64px;
+	height: 64px;
+	z-index: -1;
+}
+
+.user-transform {
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+	z-index: 1;
+}

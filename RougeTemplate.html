@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="rouge-template.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="userPlayer.js"></script>
+<script src="enemyNPC.js"></script>
+</head>
+<body onload="init()">
+<label for="user-Quadrant">ANI.Column</label>
+<input id="user-Quadrant" class="user-console" value="1"/><br>
+
+<label for="user-xPos">user.xPos</label>
+<input id="user-xPos" class="user-console" value=""/><br>
+
+<label for="user-yPos">user.yPos</label>
+<input id="user-yPos" class="user-console" value=""/><br>
+
+<label for="user-SHLD">user.SHLD</label>
+<input id="user-SHLD" class="user-console" value=""/><br>
+
+	<canvas id="mesh" width="512" height="512" style="position:absolute"></canvas>
+	<svg id="platform"
+		xmlns="http://www.w3.org/2000/svg"
+		version="1.1"
+		class="world"
+		tabindex="0">
+			/* https://css-tricks.com/almanac/properties/c/clip-path/ */
+			<image id="draw-order"	
+				<image id="tree" class="tileSet-world" width="64" height="64" style="display:none" xlink:href="WRLD_tree.png" />
+				<image id="tree" class="tileSet-world" width="64" height="64" style="display:none" xlink:href="WRLD_treeCluster(I).png" />
+				<image id="tree" class="tileSet-world" width="64" height="64" style="display:none" xlink:href="WRLD_treeCluster(II).png" />
+				
+				<!--<g>-->
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<image id="" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>
+					<!-- *Set total number of generic assets* <image id="enemy" class="enemy-sprite" width="64" height="64" xlink:href="CHARACTER\GHOUL(IV)_Male(Move).gif"/>-->
+					
+					<!--<text x="0" y="50" font-family="Verdana" font-size="35" fill="blue">Hello</text>-->
+				<!--</g>-->
+				<image id="user" class="user-sprite" width="64" height="64" xlink:href="CHARACTER\HMN(I)_Female(Move).gif"/>
+				<image id="tree" class="tileSet-world" width="64" height="64" style="display:none" xlink:href="WRLD_MtnRange(I).png" />
+			/>
+			<use id="collision-index" xlink:href="#enemy" />
+			
+	</svg>
+<br>
+<!--
+<label for="enemy-Quadrant">QUAD.Column</label>
+<input id="enemy-Quadrant" class="enemy-console" value="3"/><br>
+<label for="enemy-Quadrant">QUAD.Column</label>
+<input id="enemy-Quadrant" class="enemy-console" value="3"/><br>
+<label for="enemy-Quadrant">QUAD.Column</label>
+<input id="enemy-Quadrant" class="enemy-console" value="3"/><br>-->
+
+<!--
+<label for="enemy-xPos">user.xPos</label>
+<input id="enemy-xPos" class="user-console" value=""/><br>
+
+<label for="enemy-yPos">user.yPos</label>
+<input id="enemy-yPos" class="user-console" value=""/><br>
+-->
+
+
+
+
+<script>
+
+// .. character object(list):
+const character_asset = [];
+const npc_asset = [];
+
+//.. world object(list):
+const world_asset = [];
+const tileMap_asset = [];
+
+const tileSize = 64;
+
+const init_Pos = [];
+
+function asset(type, quadrant, width, height, x, y, xPos, yPos, collisionDetect, hitDetect, destroyed, HIT_x, HIT_y, DEF_x, DEF_y, HP, MOV, AGI, SHLD, AGRO){
+	this.type = type;
+	this.quadrant = quadrant;
+	this.width = width;
+	this.height = height;
+	this.x = x;
+	this.y = y;
+	this.xPos = xPos;
+	this.yPos = yPos;
+	this.collisionDetect = collisionDetect;
+	this.hitDetect = hitDetect;
+	this.destroyed = destroyed;
+	this.HIT_x = HIT_x;
+	this.HIT_y = HIT_y;
+	this.DEF_x = DEF_x;
+	this.DEF_y = DEF_y;
+	this.HP = HP;
+	this.MOV = MOV;
+	this.AGI = AGI;
+	this.SHLD = SHLD;
+	this.SHLD_Reset = function(){
+						
+					  };
+	this.AGRO_Reset = function(){
+		this.HIT_x = 0;
+		this.HIT_y = 0;
+		this.AGRO = false;
+	};
+	this.collisionDetect_Hit = function(inst, target){
+		var detectBound_Left = parseInt(inst.x);
+		var detectBound_Right = parseInt(inst.y + (inst.width));
+		var detectBound_Top = parseInt(inst.y);
+		var detectBound_Bottom = parseInt(inst.y + (inst.height));
+		
+		for(i=0; i < target.length; i++){
+			const bound = target[i];
+			
+			var objectBound_vX = parseInt(target[i].HIT_x);
+			var objectBound_vY = parseInt(target[i].HIT_y);
+			
+
+			if ((detectBound_Left > objectBound_vX) || (detectBound_Bottom < objectBound_vY) && (detectBound_Right < objectBound_vX) || (detectBound_Top > objectBound_vY)) {
+				
+				inst.hitDetect = false;
+				//#//console.log(bound.quad);
+				
+			} else {
+				inst.hitDetect = true;
+				
+				if(bound.ARGO !== false){
+					let xPos = parseInt(bound.HIT_x);
+					let yPos = parseInt(bound.HIT_y);
+					
+					
+					
+					var distance = Math.sqrt(((xPos - target[i].xPos)*(xPos - target[i].xPos)) + ((yPos - target[i].yPos)*(yPos - target[i].yPos)));
+
+					var vX = bound.HIT_x - target[i].DEF_x;
+					var vY = bound.HIT_y - target[i].DEF_y;
+
+					var vx_Normal = vX / distance;
+					var vy_Normal = vY / distance;
+					
+					let quad_vxNormal = Math.abs(vX);
+					let quad_vyNormal = Math.abs(vY);
+					
+					let detectBound_xV = target[i].xPos;
+					let detectBound_yV = target[i].yPos;
+					
+					
+					if (inst.hitDetect) {
+						def_Posture = document.getElementById("user-SHLD").value;
+						//#//console.log("DEF?", def_Posture);
+						if(def_Posture == "true"){
+							//#//console.log(target[0]);
+							//#//console.log(inst);
+							//#//console.log(inst[i].DEF_x, inst[i].DEF_y);
+							
+							
+							//#//console.log(target[i].DEF_x, target[i].DEF_y);
+							if ((inst.DEF_x > objectBound_vX) || (inst.DEF_y < objectBound_vY) && (inst.DEF_x < objectBound_vX) || (inst.DEF_y > objectBound_vY)) {
+								//#//console.log("BLOCK");
+							} else {
+								//#//console.log("SHLD?", target[i].SHLD);
+								//#//console.log(inst.DEF_x, inst.DEF_y)
+								inst.HP -= 0.5;
+							}
+						} else {
+							if (inst.length > 0) {
+								//#//console.log("SHLD?", inst[i].SHLD);
+								inst.HP -= 1;
+							} else {
+								inst.HP -= 1;
+							}
+							
+							//#//console.log("HIT! ", inst.HP);
+							//#//console.log("Dead? ", inst.destroyed);
+							if (inst.HP < 0) {
+								inst.destroyed = true;
+								//#//console.log("Dead? ", inst.destroyed);
+								
+								
+							} else if (inst.destroyed != true){
+								
+								var direction = bound.quad;//document.getElementById(quad).value;
+								//#//console.log(direction);
+								
+								if(parseInt(direction) === 1){
+									target.x += 5;
+									target.y -= 5;
+								}
+								if(parseInt(direction) === 2){
+									target.x -= 5;
+									target.y -= 5;
+								}
+								if(parseInt(direction) === 3){
+									target.x -= 5;
+									target.y += 5;
+								}
+								if(parseInt(direction) === 4){
+									target.x += 5;
+									target.y += 5;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+function init(){ // .. update w/ generateTerrain()
+
+	function CollisionDectect(object) {
+		this.object = object;
+		this.getBounding = function(){
+			try {
+				
+				let bounding = {
+					x : object.getAttribute("x"),
+					y : object.getAttribute("y"),
+					width : object.getAttribute("width"),
+					height : object.getAttribute("height")
+				}
+				
+				world_asset[0] = bounding;
+				sessionStorage.setItem("world", JSON.stringify(world_asset[0]));
+				console.log(bounding);
+				
+			} catch (err) {
+				console.log(err);
+			}
+		};
+	} 
+	
+	let obj = document.getElementById("block"); // .. byClass(?)
+
+	function generateTerrain(){
+		//let tileMap = [];
+		const map = document.getElementById("platform");
+		//console.log(map.clientWidth);
+		
+		let tileMap = [{"0":[]}, {"1":[]}, {"2":[]}, {"3":[]}, {"4":[]}, {"5":[]}, {"6":[]}, {"7":[]}];
+		//console.log(tileMap[0]['0']);
+		
+		function terrainObj(img, x, y, width, height, x_offset, y_offset, bound_width, bound_height, opacity){
+			//display - settings:
+			this.img = img;
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			
+			//collisionBound - settings:
+			this.x_offset = (x + x_offset);
+			this.y_offset = (y + y_offset);
+			this.bound_width = bound_width;
+			this.bound_height = bound_height;
+			
+			this.opacity = opacity
+			
+			this.updatePosition = function(){
+				/* HTML Canvas - overlay */
+				var mesh = document.getElementById("mesh");
+				var ctx = mesh.getContext("2d");
+				var sprite = new Image();
+				
+				sprite.src = img;
+				ctx.drawImage(sprite, x, y);
+				
+				
+				let angle = 0;
+				let transform = `translate(${x}, ${y} rotate(${angle} 32, 32))`;
+				const world = document.getElementById("platform");
+				const tmp = document.getElementById("block");
+				
+			
+				var sprite = document.createElementNS('http://www.w3.org/2000/svg', "rect");
+				
+				sprite.setAttribute("class", "world-collision");
+				sprite.setAttribute("xlink:href", img);
+				sprite.setAttribute("width", bound_width);
+				sprite.setAttribute("height", bound_height);
+				sprite.setAttribute("x", (x + x_offset));
+				sprite.setAttribute("y", (y + y_offset));
+				sprite.setAttribute("style", "fill:rgb(0,0,255, " + opacity + ");stroke-width:0;stroke:rgb(0,0,0)");
+				
+				
+				world.appendChild(sprite);
+				
+			}
+		}
+		
+		function allocate(){
+			var tileDimension = map.clientWidth / tileSize;
+			var pointer = 0;
+			for(n=0; n < tileDimension; n++){
+				
+				var index = n.toString();
+				let xPos;
+				let yPos;
+				
+				let tile = tileMap[index][index];
+				//console.log("row: " + n, tile);
+				
+				xPos = n * 64;
+				
+				if (pointer > 1){
+					pointer++;
+				}
+				
+				for(p=0; p < tileDimension; p++){
+					let RaN = Math.floor(Math.random() * 5);
+					yPos = p * 64;
+					
+					switch(RaN){
+						case 0:
+							var empty = {"x": xPos, "y": yPos};
+							tile[p] = empty;
+							world_asset.push(empty);
+							init_Pos.push(empty);
+							break;
+						case 1:
+							var tree = new terrainObj("WRLD_tree.png", xPos, yPos, 64, 64, 20, 30, 25, 27, 0);
+							tree.updatePosition();
+							tile[p] = tree;
+							world_asset.push(tree);
+							break;
+						case 2:
+							var tree = new terrainObj("WRLD_treeCluster(I).png", xPos, yPos, 64, 64, 0, 10, 65, 72, 0);
+							tree.updatePosition();
+							tile[p] = tree;
+							world_asset.push(tree);
+							break;
+						case 3:
+							var tree = new terrainObj("WRLD_treeCluster(II).png", xPos, yPos, 64, 64, 3, 10, 57, 68, 0);
+							tree.updatePosition();
+							tile[p] = tree;
+							world_asset.push(tree);
+							break;
+						
+						case 4:
+							var mtn = new terrainObj("WRLD_MtnRange(I).png", xPos, yPos, 64, 64, -8, 8, 72, 72, 0);
+							mtn.updatePosition();
+							tile[p] = mtn;
+							world_asset.push(mtn);
+							break;
+					}
+					
+					
+					//pointer++
+				}
+			}
+			// .. userPlayer "initial" position.
+			function init_CharPos(asset){
+				
+				console.log(asset);
+				for(i=0; i < asset.length; i++){
+					
+					let RaN = Math.floor(Math.random() * init_Pos.length);
+					if(init_Pos[RaN] != null){
+						
+						asset[i].x = (init_Pos[RaN].x + (tileSize/2));
+						asset[i].y = (init_Pos[RaN].y + (tileSize/2));
+						console.log(asset[i], init_Pos[RaN]);
+						init_Pos[RaN] = null;
+					}
+				}
+				
+				//console.log(init_Pos);
+				
+			}
+			
+			init_CharPos(character_asset); //Error - Cannot set property of undefined (setting 'x')?
+			
+			init_CharPos(npc_asset);
+			/*MULTI-NPC ... !NOT IMPLEMENTED
+		
+				for(i=0; i < init_Pos.length; i++){
+					//let enemy = new asset("ghoul", 64, 64, 264, 264, null, null, false, false, false, 0, 0, 0, 0, 3, 0.8, 5, false, false);
+					if(init_Pos[i] !== null){
+						
+							npc_asset[p] = enemy;
+							npc_asset[p].x = init_Pos[i].x + 32;
+							npc_asset[p].y = init_Pos[i].y + 32;
+							console.log(npc_asset[p]);
+						}
+					}
+				}*/
+			
+		} allocate();
+		
+		//tileMap.forEach 
+		
+		
+	} generateTerrain();
+	
+	let cmnd = {
+		width: 64,
+		height: 64,
+		x: 164,
+		y: 164,
+	}
+	
+	//console.log(world_asset);
+	/*
+	let cmndInst = document.getElementById("tree");
+	//getBoundingClientRect()
+	function updatePosition(x_offset, y_offset) {
+		
+		let rad = angle * (Math.PI/180);
+		user.x += (Math.sin(rad) * offset);
+		user.y -= (Math.cos(rad) * offset);
+		
+		
+		cmnd.x += x_offset;
+		cmnd.y += y_offset;
+	}
+	
+	let angle = 0;
+	function refresh() {
+		let x = cmnd.x - (cmnd.width/2);
+		let y = cmnd.y - (cmnd.height/2);
+		let transform = `translate(${x}, ${y}) rotate(${angle} 32 32) `; //origin of instance
+
+		cmndInst.setAttribute("transform", transform);
+	} refresh();
+
+	updatePosition(cmnd.x, cmnd.y);*/
+}
+</script>
+</body>
+</html>
